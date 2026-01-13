@@ -23,8 +23,8 @@ def find_file_from_id(id: None | int = None) -> Path | None:
         filepath = ddir / file
         if filepath.exists():
             return filepath
-        else:
-            logger.error(f"File with id={id} could not be located in {ddir}")
+    else:
+        logger.error(f"File with id={id} could not be located in {ddir}")
 
     return None
 
