@@ -1,66 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Jan 12 13:21:42 2026
+Created on Tue Jan 13 19:33:00 2026
 
 @author: umbertor
+The scripts plots the ionospheric profiles as received from Ivo Mansikka
 """
-
-import numpy as np
-from irfpy.scidat import plotting, io
-import matplotlib as mpl
-
-
-
-data = np.load('data/jica_datarequest_nr0.npz')
-a = data['pipeline_version']
-b = data['dataproductnr']
-time = data['time']
-full_data = data['p1p2m1m2']
-
-dictionary, footer = io.read_from_txt('energy_calibration_jica.txt', 
-                                      '  ', ':', '#')   
-
-en_table = dictionary['Energy_center'].data
-sp = plotting.SimplePlot(xlabel = 'time', ylabel = 'energy bin')
-cmap = sp.cmap('inferno', replace_lowest_color_by_white = False)
-
-im = sp.ax.pcolormesh(time, np.arange(64), full_data, cmap = cmap, 
-                      norm=mpl.colors.LogNorm(vmax = 5e8, vmin= 1e3))
-cmap = sp.add_colorbar(im, 'raw integer current', pad=0.05, aspect=15)
-
+from irfpy.scidat import plotting
 import matplotlib.pyplot as plt
-from scipy import stats
-
-plt.show()
-
-noise = full_data[10:, :45].flatten()
-plt.hist(noise, bins=25, density=True)
-plt.xlabel('counts')
-plt.ylabel('probability')
-
-x = np.arange(1500, 2300, 10)
-plt.plot(x, stats.norm(noise.mean(), noise.std()).pdf(x))
-plt.show()
-
-full_data_clean = full_data - noise.mean()
-full_data_clean[full_data_clean < 2*noise.std()] = 0
-
-sp = plotting.SimplePlot(xlabel = 'time', ylabel = 'energy bin')
-cmap = sp.cmap('inferno', replace_lowest_color_by_white = False)
-
-im = sp.ax.pcolormesh(time, np.arange(64), full_data_clean, cmap = cmap, 
-                      norm=mpl.colors.LogNorm(vmax = full_data.max(), vmin= full_data.min()))
-cmap = sp.add_colorbar(im, 'raw integer current', pad=0.05, aspect=15)
-
-plt.show()
-
-plt.semilogx(full_data_clean[0], -time)
-plt.xlabel('raw integer current')
-plt.ylabel('-time')
-plt.show()
-
-#%% ionospheric models
 total_pos = [[3990.8, 3428.6, 2903.2, 2424.0, 1990.8, 1585.3, 1207.4, 986.2, 903.2, 801.8, 
                       709.7, 617.5, 543.8, 424.0, 359.4, 322.6, 294.9, 239.6, 184.3, 175.1, 175.1],
                      [1360.1, 3040.0, 6636.2, 13493.9, 25558.4, 49568.5, 79558.2, 79558.2, 59895.9, 
@@ -110,6 +57,3 @@ sp.ax.plot(electrons[1], electrons[0], color = 'gray', label = 'e-')
 
 sp.ax.legend()
 plt.show()
-
-                                              
-                                                                 
