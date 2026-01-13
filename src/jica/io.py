@@ -5,6 +5,7 @@ from .logger import get_logger
 
 FILEMAP = {
     50: "jica_datarequest_nr0.npz",
+    79: "jica_datarequest_nr1.npz",
 }
 
 
