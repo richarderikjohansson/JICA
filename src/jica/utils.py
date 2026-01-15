@@ -51,6 +51,6 @@ def calc_current(spec_arr, instrument):
 
 
 def calc_mass(energy, sc_pot, vel):
-    e = -1.602176634e-19  # electron charge
+    e = 1.602176634e-19  # electron charge
     m_p = 1.67262192595e-27  # proton mass
     return e / m_p * energy * (2 - sc_pot) / vel / vel
