@@ -23,9 +23,16 @@ def red_j_spec_err(spec_arr, e_range, t_range, savename): # , corner_j, corner_e
     e_u = e_range[1]
     j_l = t_range[0]
     j_u = t_range[1]
-    spec_c = spec_arr[:-1, :] - spec_arr[1:, :]
+    print(spec_arr.ndim)
+    if spec_arr.ndim== 1:
+        spec_c = spec_arr[:-1] - spec_arr[1:]
+    else:
+        spec_c = spec_arr[:-1, :] - spec_arr[1:, :]
     # plot and savefig of counts
-    counts = spec_c[e_l:e_u, j_l:j_u].flatten()
+    if spec_arr.ndim== 1:
+        counts = spec_c[e_l:e_u]
+    else:
+        counts = spec_c[e_l:e_u, j_l:j_u].flatten()
     plt.hist(counts, bins=15, density=True)
     plt.xlabel('counts')
     plt.ylabel('probability')
@@ -52,6 +59,6 @@ def calc_current(spec_arr, instrument):
 
 
 def calc_mass(energy, sc_pot, vel):
-    e = - 1.602176634e-19 # electron charge
+    e = 1.602176634e-19 # electron charge
     m_p = 1.67262192595e-27 # proton mass
-    return e / m_p * energy * (2 - sc_pot) / vel / vel
+    return (energy + sc_pot) * 2 * e / (m_p * vel**2)
