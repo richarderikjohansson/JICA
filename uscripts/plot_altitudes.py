@@ -9,18 +9,19 @@ Created on Tue Jan 13 19:34:09 2026
 from irfpy.scidat import plotting
 import numpy as np
 
-pos1 = np.load('../data/jica_datarequest_nr1.npz')
+pos = np.load('../data/jica_datarequest_nr2_and_nr1.npz')
 
-alt1 = pos1["alt"]
-time1 = pos1["time"]
-                                              
-pos2 = np.load('../data/jica_datarequest_nr2.npz')
+alt = pos["alt"]
+tim = pos["time"]
+sp = plotting.SimplePlot(rows = 2)
+                       
+sp.ax[0].plot(tim, alt, color = 'k')
+sp.ax[0].set_xlabel('time')
+sp.ax[0].set_ylabel('altitude [km]')
 
-alt2 = pos2["alt"]
-time2 = pos2["time"]
 
+v = np.gradient(alt, tim)
 
-
-sp = plotting.SimplePlot()
-sp.ax.plot(time1, alt1, color = 'k')
-sp.ax.plot(time2, alt2, color = 'k')
+sp.ax[1].plot(tim, v, color = 'k')
+sp.ax[1].set_xlabel('time')
+sp.ax[1].set_ylabel('vertical velocity [kms-1]')
