@@ -7,6 +7,12 @@ FILEMAP = {
     50: "jica_datarequest_nr0.npz",
     79: "jica_datarequest_nr2_and_nr1.npz",
     68: "jica_datarequest_nr4.npz",
+    65: "jica_datarequest_nr6.npz",
+    80: "jica_datarequest_nr7.npz",
+    61: "jica_datarequest_nr8.npz",
+    73: "jica_datarequest_nr9.npz",
+    81: "jica_datarequest_nr10.npz",
+    69: "jica_datarequest_nr11.npz",
 }
 
 
