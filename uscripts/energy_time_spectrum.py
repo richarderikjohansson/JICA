@@ -16,8 +16,8 @@ from irfpy.scidat import plotting, io
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from scipy import stats
-
-
+import os
+os.chdir("/home/umbertor/Documents/PhD/courses/statistics/space_race/JICA/uscripts")
 
 data = np.load('../data/jica_datarequest_nr0.npz')
 a = data['pipeline_version']
