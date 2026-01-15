@@ -19,8 +19,8 @@ a = data['pipeline_version']
 b = data['dataproductnr']
 time = data['time']
 full_data = data['n2']
-full_data = .1 * full_data
 
+full_data = .1 * full_data
 energy_offset = 2.585570822484897
 
 reduced_data = np.vstack((
@@ -37,11 +37,9 @@ negative_masses = np.array([12.0111, 13.019200000000001, 14.0273, 15.03540000000
                             40.06570000000001, 41.073800000000006, 42.081900000000005, 43.09, 
                             44.0981, 45.1062, 49.0525, 50.0606, 51.06870000000001, 
                             53.084900000000005, 55.1011, 57.1173, 0.00055])
-
-
 dictionary, footer = io.read_from_txt('energy_calibration_jica.txt', 
                                       '  ', ':', '#')   
-en_table = dictionary['Energy_center'].data + 2.585570822484897
+en_table = dictionary['Energy_center'].data + energy_offset
 
 U_prel = np.load('../data/jica_datarequest_nr10.npz')['scpot'][0]
 v_prel = np.load('../data/jica_datarequest_nr7.npz')['speed'][0] * 1e3
@@ -94,13 +92,12 @@ negative_masses = np.array([12.0111, 13.019200000000001, 14.0273, 15.03540000000
 
 dictionary, footer = io.read_from_txt('energy_calibration_jica.txt', 
                                       '  ', ':', '#')   
-en_table = dictionary['Energy_center'].data
+en_table = dictionary['Energy_center'].data + energy_offset
 
 U_prel = np.load('../data/jica_datarequest_nr10.npz')['scpot'][0]
 v_prel = np.load('../data/jica_datarequest_nr7.npz')['speed'][0] * 1e3
 
-mass = energy_to_mass_negative(en_table, U = U_prel, v = v_prel) + 0.2199999
-
+mass = energy_to_mass_negative(en_table, U = U_prel, v = v_prel) 
 
 sp = plotting.SimplePlot(xlabel = 'Energy [eV]', ylabel = 'current [pA]', yscale='log')
 sp.ax.plot(en_table, reduced_data[:, 0])
