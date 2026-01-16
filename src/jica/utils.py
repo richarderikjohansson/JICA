@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from .io import find_file_from_id, find_file_from_name
 from scipy import stats
+from types import SimpleNamespace
 
 
 def red_j_spec_err(spec_arr, e_range, t_range, savename):  # , corner_j, corner_e
@@ -51,6 +53,38 @@ def calc_current(spec_arr, instrument):
 
 
 def calc_mass(energy, sc_pot, vel):
+    """Lenas mass function
+
+    :param energy:
+    :param sc_pot:
+    :param vel:
+    :return:
+    """
     e = 1.602176634e-19  # electron charge
     m_p = 1.67262192595e-27  # proton mass
     return e / m_p * energy * (2 - sc_pot) / vel / vel
+
+
+def calculate_mass(E: float, v: float, U: float, q_sign: int) -> float:
+    """Richards mass function
+
+    :param E: Energy in Ev/q
+    :param v: Velocity in km/s
+    :param U: Voltage
+    :param q_sign: ion sign
+    :return: mass in amu
+    """
+    e = 1.602e-19
+    mp = 1.6726e-27
+
+    E = E * e
+    if q_sign > 0:
+        kinetic_energy_J = E + U * e
+    else:
+        kinetic_energy_J = E - U * e
+
+    m_over_q_mp = 2 * kinetic_energy_J / (v**2)
+    mass_kg = m_over_q_mp
+    mass_amu = mass_kg / mp
+
+    return mass_amu

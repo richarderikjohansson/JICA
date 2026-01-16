@@ -1,5 +1,6 @@
 import numpy as np
 from pathlib import Path
+from types import SimpleNamespace
 
 from .logger import get_logger
 
@@ -66,3 +67,29 @@ def get_datadir() -> Path:
         current = parent / target
         if current.exists():
             return current
+
+
+def read_data_from_id(id: int) -> SimpleNamespace:
+    """Function to read data from id
+
+    :param id: id of dataset according to mission data products
+    :return: simple name space of the data
+    """
+    fp = find_file_from_id(id=id)
+    npdata = np.load(fp)
+    dct = {k: npdata[k] for k in npdata.keys()}
+    namespace = SimpleNamespace(**dct)
+    return namespace
+
+
+def read_data_from_name(name: str) -> SimpleNamespace:
+    """Function to read data from filename
+
+    :param name: name of the file located in /data
+    :return: simple name space of the data
+    """
+    fp = find_file_from_name(name)
+    npdata = np.load(fp)
+    dct = {k: npdata[k] for k in npdata.keys()}
+    namespace = SimpleNamespace(**dct)
+    return namespace
