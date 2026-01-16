@@ -24,6 +24,11 @@ time = data['time']
 full_data = data['p1p2m1m2']
 
 
+dictionary, footer = io.read_from_txt('energy_calibration_jica.txt', 
+                                      '  ', ':', '#')   
+en_table = dictionary['Energy_center'].data
+
+reduced_en_table = np.linspace(en_table[0], en_table[-1], len(full_data[:,0]))
 reduced_data = np.vstack((
     full_data[:-1, :] - full_data[1:, :],
     (full_data[:-1, :] - full_data[1:, :])[-1,:]))
@@ -36,14 +41,18 @@ plt.plot(x, stats.norm(noise.mean(), noise.std()).pdf(x))
 plt.show()
 reduced_data_clean = reduced_data - noise.mean()
 
-reduced_data_clean[reduced_data_clean < 3*noise.std()] = 0
+reduced_data_clean[reduced_data_clean < 1*noise.std()] = 0
 
 
-sp = plotting.SimplePlot(xlabel = 'time', ylabel = 'energy bin')
+sp = plotting.SimplePlot(xlabel = 'time', ylabel = 'energy [eV]')
 cmap = sp.cmap('inferno', replace_lowest_color_by_white = False)
 
-im = sp.ax.pcolormesh(time, np.arange(64), reduced_data_clean, cmap = cmap, 
+
+im = sp.ax.pcolormesh(time, reduced_en_table, reduced_data, cmap = cmap, 
                       norm=mpl.colors.LogNorm(vmax = full_data.max(), vmin= full_data.min()))
 cmap = sp.add_colorbar(im, 'raw integer current', pad=0.05, aspect=15)
+
+sp.ax.set_ylim([1000,1200])
+sp.ax.set_xlim([-160,-130])
 
 plt.show()
