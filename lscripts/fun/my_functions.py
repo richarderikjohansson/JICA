@@ -1,9 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
-from matplotlib.colors import LogNorm
+from molmass import Formula
 
-def red_j_spec_err(spec_arr, e_range, t_range, savename): # , corner_j, corner_e
+
+def red_j_spec_err(spec_arr, e_range, t_range, savename=None): # , corner_j, corner_e
     """
     red_j_spec_err
     This function cleans the energy-current spectrum from noise, which is estimated by a given empty corner of the matrix. 
@@ -39,7 +40,8 @@ def red_j_spec_err(spec_arr, e_range, t_range, savename): # , corner_j, corner_e
     x = np.arange(-500, 500, 10)
     count_dist = stats.norm(counts.mean(), counts.std()).pdf(x)
     plt.plot(x, count_dist)
-    plt.savefig(f'figs/noise_fit_{savename}.png')
+    if savename:
+        plt.savefig(f'figs/noise_fit_{savename}.png')
     # reduce 3sigma
     spec_cleaned = spec_c - counts.mean()
     spec_cleaned[spec_cleaned < 3 * counts.std()] = 0
@@ -59,6 +61,52 @@ def calc_current(spec_arr, instrument):
 
 
 def calc_mass(energy, sc_pot, vel):
-    e = 1.602176634e-19 # electron charge
-    m_p = 1.67262192595e-27 # proton mass
+    e = 1.6022e-19 # electron charge
+    m_p = 1.6726e-27 # proton mass
     return (energy + sc_pot) * 2 * e / (m_p * vel**2)
+
+
+def calc_energy(mass, sc_pot, vel, instrument='n'):
+    """
+    Docstring for calc_energy_n
+    
+    :param mass: mass value or array
+    :param sc_pot: spacecraft potential value or array
+    :param vel: velocity value or array
+    :param instrument: 'n' if negative ion instrument, 'p' if positive ion instrument
+    """
+    e = 1.6022e-19 # electron charge
+    m_p = 1.6726e-27 # proton mass
+    if instrument=='n':
+        return mass * m_p * vel * vel / 2 / e + sc_pot
+    else:
+        return mass * m_p * vel * vel / 2 / e - sc_pot
+    
+
+def energy_calibration(instrument='n'):
+    """
+    This function gives an output energy table, 
+    it performs both calibration for the instrument and subtracts the remaining offset. 
+    """
+    sc_pot = np.load('../data/jica_datarequest_nr10.npz')['scpot'][0]
+    vel = np.load('../data/jica_datarequest_nr7.npz')['speed'][0] * 1e3
+    en_cal = np.loadtxt('../data/energy_calibration_jica.txt')[:,1]
+
+    if instrument=='n':
+        spec = np.load("../data/jica_datarequest_nr11.npz")['n1'].flatten()
+        spec_c = red_j_spec_err(spec, [400, 512], [0, 1])
+        MOL = 'CH3Br-'
+        MOI = Formula(MOL).mass
+        offset_arr = en_cal[293:410]
+        offset_spec = spec_c[293:410]
+    else: 
+        spec = np.load("../data/jica_datarequest_nr8.npz")['p1'].flatten()
+        spec_c = red_j_spec_err(spec, [400, 512], [0, 1])
+        MOL = 'PC2H5+'
+        MOI = Formula(MOL).mass
+        offset_arr = en_cal[225:245]
+        offset_spec = spec_c[225:245]        
+
+    offset = calc_energy(MOI, sc_pot, vel, instrument) - offset_arr[np.argmax(offset_spec)]
+    
+    return en_cal + offset
