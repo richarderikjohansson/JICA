@@ -40,6 +40,7 @@ def red_j_spec_err(spec_arr, e_range, t_range, savename=None): # , corner_j, cor
     x = np.arange(-500, 500, 10)
     count_dist = stats.norm(counts.mean(), counts.std()).pdf(x)
     plt.plot(x, count_dist)
+    
     if savename:
         plt.savefig(f'figs/noise_fit_{savename}.png')
     # reduce 3sigma
