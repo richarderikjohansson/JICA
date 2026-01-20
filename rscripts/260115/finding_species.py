@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 import numpy as np
 from types import SimpleNamespace
+from scipy.optimize import curve_fit
 
 
 def read_data_from_id(id: int):
@@ -48,6 +49,10 @@ def calculate_mass(E, v, U, q_sign):
     return mass_amu
 
 
+def gaussian_offset(t, A, mu, sigma):
+    return A * np.exp(-((t - mu) ** 2) / (2 * sigma**2))
+
+
 ion_pos = read_data_from_id(id=65)
 en_table_pos = read_data_from_name("pos_en_table_adjusted.npz")
 en_table_neg = read_data_from_name("neg_en_table_adjusted.npz")
@@ -76,16 +81,17 @@ reduced_ion_pos = np.vstack(
 pos_masses = calculate_mass(en_table_pos.en_adjusted, vel, scpot, 1)
 neg_masses = calculate_mass(en_table_neg.en_adjusted, vel, scpot, -1)
 
-fig = plt.figure(figsize=(12, 6))
-plt.suptitle(f"v={vel / 1e3} km/s, U={scpot}")
+fig = plt.figure(figsize=(16, 8))
+plt.suptitle(f"v={vel / 1e3} km/s, U={scpot[0]} V")
 
 gs = GridSpec(1, 1)
 pos = fig.add_subplot(gs[0, 0])
-pos.set_ylabel("current [pA]")
+pos.set_ylabel("current [pA]", fontsize=20)
 for ax in fig.axes:
     ax.set_yscale("log")
     ax.set_ylim((2, 1e4))
-    ax.set_xlabel("Mass [amu]")
+    ax.set_xlabel("Mass [amu]", fontsize=20)
+    ax.tick_params(which="both", labelsize=18)
 
 
 posmin, posmax = pos.get_ylim()
@@ -98,19 +104,20 @@ pos.vlines(
     60.035, ymin=posmin, ymax=posmax, label=r"$PC_2H_5^+$", color="red", alpha=0.5
 )
 pos.legend()
-fig.savefig("biomarker_pos.pdf")
+fig.savefig("biomarker_pos.png", transparent=True)
 
 
-fig = plt.figure(figsize=(12, 6))
-plt.suptitle(f"v={vel / 1e3} km/s, U={scpot}")
+fig = plt.figure(figsize=(16, 8))
+plt.suptitle(f"v={vel / 1e3} km/s, U={scpot[0]} V")
 
 gs = GridSpec(1, 1)
 neg = fig.add_subplot(gs[0, 0])
-neg.set_ylabel("current [pA]")
+neg.set_ylabel("current [pA]", fontsize=20)
 for ax in fig.axes:
     ax.set_yscale("log")
     ax.set_ylim((2, 1e4))
-    ax.set_xlabel("Mass [amu]")
+    ax.set_xlabel("Mass [amu]", fontsize=20)
+    ax.tick_params(which="both", labelsize=18)
 
 
 negmin, negmax = neg.get_ylim()
@@ -121,4 +128,4 @@ for i in NEG:
 neg.plot(neg_masses, reduced_ion_neg[:, 0], color="black")
 neg.vlines(94.93, ymin=negmin, ymax=negmax, label=r"$CH_3Br^-$", color="red", alpha=0.5)
 neg.legend()
-fig.savefig("biomarker_neg.pdf")
+fig.savefig("biomarker_neg.png", transparent=True)
