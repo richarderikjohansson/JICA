@@ -92,3 +92,6 @@ NEG = np.array(
         0.00055,
     ]
 )
+
+mp = 1.67262192595e-27  # proton mass
+e = 1.602176634e-19  # elementary charge
