@@ -111,3 +111,17 @@ def energy_calibration(instrument='n'):
     offset = calc_energy(MOI, sc_pot, vel, instrument) - offset_arr[np.argmax(offset_spec)]
     
     return en_cal + offset
+
+sc_pot = np.load("../data/jica_datarequest_nr10.npz")['scpot']
+velocity = np.load("../data/jica_datarequest_nr7.npz")['speed'] * 1e3
+
+def gauss_fixed_mean_n(x, A, std):
+    mean = calc_energy(Formula('CH3Br-').mass, sc_pot, velocity, instrument='n')
+    return A * np.exp(- (x - mean) ** 2 / 2 / std / std)
+
+def gauss_fixed_mean_p(x, A, std):
+    mean = calc_energy(Formula('PC2H5+').mass, sc_pot, velocity, instrument='p')
+    return A * np.exp(- (x - mean) ** 2 / 2 / std / std)
+
+def gauss(x, mean, A, std):
+    return A * np.exp(- (x - mean) ** 2 / 2 / std / std)
