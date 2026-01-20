@@ -44,7 +44,7 @@ en_table = dictionary['Energy_center'].data
 U_prel = np.load('../data/jica_datarequest_nr10.npz')['scpot'][0]
 v_prel = np.load('../data/jica_datarequest_nr7.npz')['speed'][0] * 1e3
 def mass_to_energy_negative(m, U, v, q=1):
-        return 1/2*(m * mp * v**2)/e + U
+    return 1/2*(m * mp * v**2)/e + U
 negative_energies = []
 for i in range(len(negative_masses)):
     negative_energies.append(mass_to_energy_negative(negative_masses[i], U_prel, v_prel))
