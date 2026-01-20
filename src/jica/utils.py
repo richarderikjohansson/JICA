@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from .io import find_file_from_id, find_file_from_name
+from .const import e, mp
 from scipy import stats
 from types import SimpleNamespace
 
@@ -88,3 +89,14 @@ def calculate_mass(E: float, v: float, U: float, q_sign: int) -> float:
     mass_amu = mass_kg / mp
 
     return mass_amu
+
+
+def current2counts(ion_current: np.ndarray, dt: int):
+    """Function to calculate counts from current in pA
+
+    :param ion_current: array with ion currents
+    :param dt: time resolution
+    :return: counts
+    """
+    current_in_ampere = ion_current / 1e12
+    return (current_in_ampere * dt) / e
